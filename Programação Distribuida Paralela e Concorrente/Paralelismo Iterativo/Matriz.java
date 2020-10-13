@@ -32,21 +32,26 @@ public class Matriz{
         return this.column;
     }
 
-    public double[][] readFile(String file, String separator) {
-        try (BufferedReader br = new BufferedReader(new FileReader("pathtocsvfile.csv"))) {
+    public static double[][] readFile(String file, String separator) {
+        try (BufferedReader br = new BufferedReader(new FileReader("./resources/" + file))) {
             String line;
             double[][] result = null;
             int counter = 0;
-            while((line = br.readLine()) != null){
+            int lines = -1;
+            int columns = -1;
+            while((line = br.readLine()) != null && counter != lines){
                 if(result == null){
                     String[] size = line.split(separator);
-                    result = new double[Integer.valueOf(size[0])][Integer.valueOf(size[1])];
+                    lines = Integer.valueOf(size[0]);
+                    columns = Integer.valueOf(size[1]);
+                    result = new double[lines][columns];
                 }
                 else{
                     String[] numbers = line.split(separator);
                     for(int i = 0; i < numbers.length; i++){
                         result[counter][i] = Double.valueOf(numbers[i]);
                     }
+                    counter++;
                 }
             }
             return result;
@@ -57,21 +62,21 @@ public class Matriz{
         }
     }
 
-    public void generateMatrix(String fileName) {
-        try(FileWriter fileWriter = new FileWriter("./resources/" + hashCode + ".txt", true);
+    public void generateMatrix(String fileName, String separator) {
+        try(FileWriter fileWriter = new FileWriter("./resources/" + (hashCode + fileName.hashCode()) + ".txt", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
-                bufferedWriter.write(this.line + "," + this.column + '\n');
+                bufferedWriter.write(this.line + separator + this.column + '\n');
             for (int l = 0; l < line; l++){
                 for (int c = 0; c < column; c++){
                     matriz[l][c] = rand.nextDouble() * 1000;
                     if(c != column - 1)
-                        bufferedWriter.write(String.valueOf(matriz[l][c]) + ",");
+                        bufferedWriter.write(String.valueOf(matriz[l][c]) + separator);
                     else
                         bufferedWriter.write(String.valueOf(matriz[l][c]));
                 }
                 bufferedWriter.write("\n");
             }
-            Main.files.put(fileName, hashCode);
+            Main.files.put(fileName, hashCode + fileName.hashCode());
         }catch (Exception e){
             e.printStackTrace();
         }
